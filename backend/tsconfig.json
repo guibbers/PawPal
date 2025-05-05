@@ -10,6 +10,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "baseUrl": "./src",
+"paths": {
+  "@config/*": ["config/*"],
+  "@routes/*": ["routes/*"],
+  "@controllers/*": ["controllers/*"],
+  "@types/*": ["types/*"]
+},
   "include": ["src"],
   "exclude": ["node_modules"]
 }
