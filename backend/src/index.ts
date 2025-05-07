@@ -14,49 +14,47 @@ app.use(express.json());
 
 // ------------------------------------------------------------------------------------
 
-async function main() {
-	const tutor = await prisma.user.create({
-		data: {
-			name: 'João Tutor',
-			email: 'joao@exemplo.com',
-			password: 'senhasegura123',
-			role: Role.TUTOR,
-		},
-	});
+// async function main() {
+// 	const tutor = await prisma.user.create({
+// 		data: {
+// 			name: 'Adolfo',
+// 			email: 'adolfo@exemplo.com',
+// 			password: 'senhasegura123',
+// 			role: Role.TUTOR,
+// 		},
+// 	});
 
-	console.log('Tutor criado:', tutor);
+// 	console.log('Tutor criado:', tutor);
 
-	const dog = await prisma.dog.create({
-		data: {
-			name: 'Rex',
-			breed: 'Labrador',
-			age: 3,
-			tutorId: tutor.id,
-		},
-	});
+// 	const dog = await prisma.dog.create({
+// 		data: {
+// 			name: 'Bruno',
+// 			breed: 'Maltês',
+// 			age: 3,
+// 			tutorId: tutor.id,
+// 		},
+// 	});
 
-	console.log('Cachorro criado:', dog);
+// 	console.log('Cachorro criado:', dog);
 
-	const photo = await prisma.photo.create({
-		data: {
-			url: 'https://exemplo.com/foto-do-rex.jpg',
-			dogId: dog.id,
-		},
-	});
+// 	const photo = await prisma.photo.create({
+// 		data: {
+// 			url: 'https://exemplo.com/foto-do-rex.jpg',
+// 			dogId: dog.id,
+// 		},
+// 	});
 
-	console.log('Foto criada:', photo);
-}
+// 	console.log('Foto criada:', photo);
+// }
 app.get('/', (req, res) => {
 	res.send('PawPal API funcionando 🐾');
 });
 
-main()
-	.catch((e) => {
-		console.error(e);
-	})
-	.finally(async () => {
-		await prisma.$disconnect();
-	});
+app.post('/users', async (req, res) => {
+ try {
+	const {name, email, password, phone, role, dogs} = req.body;
+ }
+}
 
 app.listen(PORT, () => {
 	console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
