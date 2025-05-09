@@ -17,14 +17,15 @@ model User {
   password  String
   phone     String
   role      Role
-  dogs      Dog[]
+  pets      Pet[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Dog {
+model Pet {
   id        String   @id @default(uuid())
   name      String
+  type      PetType  @default(DOG)
   breed     String?
   age       Int?
   tutor     User     @relation(fields: [tutorId], references: [id])
@@ -37,13 +38,23 @@ model Dog {
 model Photo {
   id        String   @id @default(uuid())
   url       String
-  dog       Dog      @relation(fields: [dogId], references: [id])
-  dogId     String
+  pet       Pet      @relation(fields: [petId], references: [id])
+  petId     String
   createdAt DateTime @default(now())
 }
 
 enum Role {
-  GERENTE
+  MANAGER
+  RECEPCIONIST
   MONITOR
   TUTOR
+}
+
+enum PetType {
+  DOG
+  CAT
+  FERRET
+  BIRD
+  FISH
+  OTHER
 }

@@ -9,5 +9,5 @@ export const userSchema = z.object({
 		.string()
 		.min(6, { message: 'senha precisa ter ao menos 6 caracteres' }),
 	phone: z.string().min(11, { message: 'Número de telefone inválido' }),
-	role: z.enum(['TUTOR', 'MONITOR', 'GERENTE']),
+	role: z.enum(['TUTOR', 'MONITOR', 'MANAGER', 'RECEPCIONIST']),
 });

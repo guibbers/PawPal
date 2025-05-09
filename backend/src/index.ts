@@ -6,6 +6,8 @@ import type { Request, Response } from 'express';
 import express from 'express';
 import prisma from './lib/prisma';
 import { userSchema } from './validators/userSchema';
+import { userSearchSchema } from './validators/userSearchSchema';
+import { userUpdateSchema } from './validators/userUpdateSchema';
 
 dotenv.config();
 
@@ -70,7 +72,7 @@ app.get('/users', async (req: Request, res: Response) => {
 				email: true,
 				phone: true,
 				role: true,
-				dogs: true,
+				pets: true,
 			},
 		});
 
@@ -78,6 +80,76 @@ app.get('/users', async (req: Request, res: Response) => {
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ error: 'Erro ao buscar usuários' });
+	}
+});
+
+app.get('/users/search', async (req: Request, res: Response) => {
+	try {
+		const parsed = userSearchSchema.safeParse(req.query);
+
+		if (!parsed.success) {
+			return res.status(400).json({ error: parsed.error.format() });
+		}
+		const { id, name, email, role } = parsed.data;
+
+		if (!id && !email && !name && !role) {
+			return res
+				.status(400)
+				.json({ error: 'Informe ao menos um critério de busca.' });
+		}
+
+		const filters: any = {};
+
+		if (id) filters.id = id;
+		if (email) filters.email = email;
+		if (name) filters.name = { contains: name, mode: 'insensitive' };
+		if (role) filters.role = role.toUpperCase();
+
+		const users = await prisma.user.findMany({
+			where: filters,
+			include: {
+				pets: true,
+			},
+		});
+
+		return res.status(200).json(users);
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ error: 'Erro ao buscar usuários' });
+	}
+});
+
+app.put('/users/:id', async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	try {
+		const parsed = userUpdateSchema.parse(req.body);
+
+		const dataToUpdate = { ...parsed };
+
+		if (parsed.password) {
+			dataToUpdate.password = await bcrypt.hash(parsed.password, 10);
+		}
+
+		const updatedUser = await prisma.user.update({
+			where: { id },
+			data: dataToUpdate,
+		});
+
+		const { password, ...userWithoutPassword } = updatedUser;
+
+		return res.status(200).json(userWithoutPassword);
+	} catch (err: any) {
+		if (err.code === 'P2025') {
+			return res.status(404).json({ error: 'Usuário não encontrado' });
+		}
+
+		if (err.name === 'ZodError') {
+			return res.status(400).json({ error: err.errors });
+		}
+
+		console.error(err);
+		return res.status(500).json({ error: 'Erro ao atualizar usuário' });
 	}
 });
 
