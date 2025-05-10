@@ -31,6 +31,9 @@ model Pet {
   tutor     User     @relation(fields: [tutorId], references: [id])
   tutorId   String
   photos    Photo[]
+  neutered  Boolean
+  gender    Sex
+  notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -57,4 +60,10 @@ enum PetType {
   BIRD
   FISH
   OTHER
+}
+
+enum Sex {
+  MALE
+  FEMALE
+  UNKNOWN
 }
