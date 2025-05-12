@@ -1,5 +1,3 @@
-// backend/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
@@ -24,28 +22,37 @@ model User {
 }
 
 model Pet {
-  id             String   @id @default(uuid())
+  id             String     @id @default(uuid())
   name           String
   normalizedName String
-  type           PetType  @default(DOG)
+  type           PetType    @default(DOG)
   breed          String?
   age            Int?
-  tutor          User     @relation(fields: [tutorId], references: [id])
+  tutor          User       @relation(fields: [tutorId], references: [id])
   tutorId        String
-  photos         Photo[]
   neutered       Boolean
-  sex            Sex      @default(UNKNOWN)
+  sex            Sex        @default(UNKNOWN)
   notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  PetPhoto       PetPhoto[]
 }
 
 model Photo {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   url       String
-  pet       Pet      @relation(fields: [petId], references: [id])
-  petId     String
-  createdAt DateTime @default(now())
+  pets      PetPhoto[]
+  createdAt DateTime   @default(now())
+}
+
+model PetPhoto {
+  id      String @id @default(uuid())
+  pet     Pet    @relation(fields: [petId], references: [id])
+  petId   String
+  photo   Photo  @relation(fields: [photoId], references: [id])
+  photoId String
+
+  @@unique([petId, photoId])
 }
 
 enum Role {
