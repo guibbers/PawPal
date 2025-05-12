@@ -18,7 +18,6 @@ export const createUser = async (req: Request, res: Response) => {
 				.status(400)
 				.json({ error: 'Não foi possível criar o usuário' });
 		}
-
 		const hashedPassword = await bcrypt.hash(validated.password, 10);
 
 		const user = await prisma.user.create({

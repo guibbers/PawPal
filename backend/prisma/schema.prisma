@@ -32,7 +32,7 @@ model Pet {
   tutorId   String
   photos    Photo[]
   neutered  Boolean
-  gender    Sex
+  sex       Sex      @default(UNKNOWN)
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
