@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { petSchema } from '../validators/petSchema';
 import { petSearchSchema } from '../validators/petSearchSchema';
+import { petUpdateSchema } from '../validators/petUpdateSchema';
 
 export const createPet = async (req: Request, res: Response) => {
 	try {
@@ -101,6 +102,32 @@ export const searchPets = async (req: Request, res: Response) => {
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ error: 'Erro ao buscar pets.' });
+	}
+};
+
+export const updatePet = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	try {
+		const parsed = petUpdateSchema.parse(req.body);
+		const dataToUpdate = { ...parsed };
+
+		const updatedPet = await prisma.pet.update({
+			where: { id },
+			data: dataToUpdate,
+		});
+
+		return res.status(200).json(updatedPet);
+	} catch (err: any) {
+		if (err.code === 'P2025') {
+			return res.status(404).json({ error: 'Pet não encontrado' });
+		}
+
+		if (err.name === 'ZodError') {
+			return res.status(400).json({ error: err.errors });
+		}
+
+		console.error(err);
+		return res.status(500).json({ error: 'Erro ao atualizar pet' });
 	}
 };
 
