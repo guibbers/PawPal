@@ -11,31 +11,33 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String
-  role      Role
-  pets      Pet[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid())
+  name           String
+  normalizedName String
+  email          String   @unique
+  password       String
+  phone          String
+  role           Role
+  pets           Pet[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Pet {
-  id        String   @id @default(uuid())
-  name      String
-  type      PetType  @default(DOG)
-  breed     String?
-  age       Int?
-  tutor     User     @relation(fields: [tutorId], references: [id])
-  tutorId   String
-  photos    Photo[]
-  neutered  Boolean
-  sex       Sex      @default(UNKNOWN)
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid())
+  name           String
+  normalizedName String
+  type           PetType  @default(DOG)
+  breed          String?
+  age            Int?
+  tutor          User     @relation(fields: [tutorId], references: [id])
+  tutorId        String
+  photos         Photo[]
+  neutered       Boolean
+  sex            Sex      @default(UNKNOWN)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Photo {

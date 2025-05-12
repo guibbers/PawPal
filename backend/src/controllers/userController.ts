@@ -1,7 +1,9 @@
 import type { Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import type { Request, Response } from 'express';
+import { latinize } from 'modern-diacritics';
 import prisma from '../lib/prisma';
+import { normalize } from '../utils/normalize';
 import { userSchema } from '../validators/userSchema';
 import { userSearchSchema } from '../validators/userSearchSchema';
 import { userUpdateSchema } from '../validators/userUpdateSchema';
@@ -19,10 +21,12 @@ export const createUser = async (req: Request, res: Response) => {
 				.json({ error: 'Não foi possível criar o usuário' });
 		}
 		const hashedPassword = await bcrypt.hash(validated.password, 10);
+		const normalizedName = latinize(validated.name, { lowerCase: true });
 
 		const user = await prisma.user.create({
 			data: {
 				...validated,
+				normalizedName,
 				password: hashedPassword,
 			},
 		});
@@ -72,9 +76,9 @@ export const searchUsers = async (req: Request, res: Response) => {
 		if (!parsed.success) {
 			return res.status(400).json({ error: parsed.error.format() });
 		}
-		const { id, name, email, role } = parsed.data;
+		const { id, name, email, role, normalizedName } = parsed.data;
 
-		if (!id && !email && !name && !role) {
+		if (!id && !email && !name && !role && !normalizedName) {
 			return res
 				.status(400)
 				.json({ error: 'Informe ao menos um critério de busca.' });
@@ -84,7 +88,11 @@ export const searchUsers = async (req: Request, res: Response) => {
 
 		if (id) filters.id = id;
 		if (email) filters.email = email;
-		if (name) filters.name = { contains: name, mode: 'insensitive' };
+		if (name)
+			filters.normalizedName = {
+				contains: normalize(name),
+				mode: 'insensitive',
+			};
 		if (role) filters.role = role.toUpperCase();
 
 		const users = await prisma.user.findMany({

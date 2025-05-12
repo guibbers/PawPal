@@ -1,4 +1,4 @@
-import { PetType } from '@prisma/client';
+import { PetType, Sex } from '@prisma/client';
 import { z } from 'zod';
 
 export const petUpdateSchema = z.object({
@@ -6,5 +6,5 @@ export const petUpdateSchema = z.object({
 	type: z.nativeEnum(PetType).optional(),
 	breed: z.string().optional(),
 	age: z.number().int().positive().optional(),
-	sex: z.string().optional(),
+	sex: z.nativeEnum(Sex).optional(),
 });
