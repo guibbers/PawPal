@@ -94,7 +94,11 @@ export const updateUser = async (req: Request, res: Response) => {
 	try {
 		const parsed = userUpdateSchema.parse(req.body);
 
-		const dataToUpdate = { ...parsed };
+		const dataToUpdate: any = { ...parsed };
+
+		if (parsed.name) {
+			dataToUpdate.normalizedName = normalize(parsed.name);
+		}
 
 		if (parsed.password) {
 			dataToUpdate.password = await bcrypt.hash(parsed.password, 10);

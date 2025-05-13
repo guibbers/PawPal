@@ -26,6 +26,7 @@ export const petSearchSchema = z.object({
 
 export const petUpdateSchema = z.object({
 	name: z.string().optional(),
+	normalizedName: z.string().optional(),
 	type: z.nativeEnum(PetType).optional(),
 	profilePicture: z.string().url().optional(),
 	breed: z.string().optional(),

@@ -57,6 +57,10 @@ export const updatePet = async (req: Request, res: Response) => {
 		const parsed = petUpdateSchema.parse(req.body);
 		const dataToUpdate = { ...parsed };
 
+		if (parsed.name) {
+			dataToUpdate.normalizedName = normalize(parsed.name);
+		}
+
 		const updatedPet = await prisma.pet.update({
 			where: { id },
 			data: dataToUpdate,
