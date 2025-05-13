@@ -2,6 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import prisma from './lib/prisma';
+import authRoutes from './routes/authRoutes';
 import petRoutes from './routes/petRoutes';
 import photoRoutes from './routes/photoRoutes';
 import userRoutes from './routes/userRoutes';
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(userRoutes);
 app.use(petRoutes);
 app.use(photoRoutes);
+app.use(authRoutes);
 
 // ------------------------------------------------------------------------------------
 

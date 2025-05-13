@@ -29,3 +29,8 @@ export const userUpdateSchema = z.object({
 	phone: z.string().min(10).max(15).optional(),
 	role: z.nativeEnum(Role).optional(),
 });
+
+export const loginSchema = z.object({
+	email: z.string().email(),
+	password: z.string().min(6),
+});
