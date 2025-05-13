@@ -8,6 +8,7 @@ export const userSchema = z.object({
 	password: z
 		.string()
 		.min(6, { message: 'senha precisa ter ao menos 6 caracteres' }),
+	profilePicture: z.string().url().optional(),
 	phone: z.string().min(11, { message: 'Número de telefone inválido' }),
 	role: z.enum(['TUTOR', 'MONITOR', 'MANAGER', 'RECEPCIONIST']),
 });

@@ -61,6 +61,49 @@ export const getPhotos = async (req: Request, res: Response) => {
 	}
 };
 
+export const getPhotosByPetId = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+
+		const pet = await prisma.pet.findUnique({
+			where: { id },
+		});
+
+		if (!pet) {
+			return res.status(404).json({ error: 'Pet não encontrado.' });
+		}
+
+		const photos = await prisma.photo.findMany({
+			where: {
+				pets: {
+					some: {
+						petId: id,
+					},
+				},
+			},
+			include: {
+				pets: {
+					include: {
+						pet: {
+							select: {
+								id: true,
+								name: true,
+								normalizedName: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		return res.status(200).json(photos);
+	} catch (err: any) {
+		console.error(err);
+
+		return res.status(500).json({ error: 'Erro ao buscar fotos do pet.' });
+	}
+};
+
 export const updatePhoto = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;

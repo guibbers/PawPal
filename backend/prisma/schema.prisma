@@ -12,6 +12,7 @@ model User {
   id             String   @id @default(uuid())
   name           String
   normalizedName String
+  profilePicture String?
   email          String   @unique
   password       String
   phone          String
@@ -25,6 +26,7 @@ model Pet {
   id             String     @id @default(uuid())
   name           String
   normalizedName String
+  profilePicture String?
   type           PetType    @default(DOG)
   breed          String?
   age            Int?

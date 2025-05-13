@@ -5,6 +5,7 @@ import { normalize } from '../utils/normalize';
 import { petSchema } from '../validators/petSchema';
 import { petSearchSchema } from '../validators/petSearchSchema';
 import { petUpdateSchema } from '../validators/petUpdateSchema';
+import { getPetsByUserSchema } from '../validators/petsByUserSchema';
 
 export const createPet = async (req: Request, res: Response) => {
 	try {
@@ -158,5 +159,28 @@ export const deletePet = async (req: Request, res: Response) => {
 
 		console.error(err);
 		return res.status(500).json({ error: 'Erro ao deletar pet' });
+	}
+};
+
+export const getPetsByUser = async (req: Request, res: Response) => {
+	try {
+		const { id } = getPetsByUserSchema.parse(req.params);
+
+		const userExists = await prisma.user.findUnique({
+			where: { id },
+		});
+
+		if (!userExists) {
+			return res.status(404).json({ error: 'Usuário não encontrado.' });
+		}
+
+		const pets = await prisma.pet.findMany({
+			where: { tutorId: id },
+		});
+
+		return res.status(200).json(pets);
+	} catch (err: any) {
+		console.error(err);
+		return res.status(500).json({ error: 'Erro ao buscar pets do usuário.' });
 	}
 };
