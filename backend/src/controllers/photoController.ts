@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { photoSchema } from '../validators/photoSchema';
+import { photoUpdateSchema } from '../validators/photoUpdateSchema';
 
 export const createPhoto = async (req: Request, res: Response) => {
 	try {
@@ -60,9 +61,52 @@ export const getPhotos = async (req: Request, res: Response) => {
 	}
 };
 
-export const searchPhotos = async (req: Request, res: Response) => {};
+export const updatePhoto = async (req: Request, res: Response) => {
+	try {
+		const { id } = req.params;
+		const parsed = photoUpdateSchema.safeParse(req.body);
 
-export const updatePhoto = async (req: Request, res: Response) => {};
+		if (!parsed.success) {
+			return res.status(400).json({ error: parsed.error.format() });
+		}
+
+		const { url, petIds } = parsed.data;
+
+		const existingPhoto = await prisma.photo.findUnique({
+			where: { id },
+			include: { pets: true },
+		});
+
+		if (!existingPhoto) {
+			return res.status(404).json({ error: 'Foto não encontrada.' });
+		}
+
+		const updatedPhoto = await prisma.photo.update({
+			where: { id },
+			data: {
+				url: url ?? existingPhoto.url,
+				pets: petIds
+					? {
+							deleteMany: {},
+							create: petIds.map((petId) => ({
+								pet: { connect: { id: petId } },
+							})),
+						}
+					: undefined,
+			},
+			include: {
+				pets: {
+					include: { pet: true },
+				},
+			},
+		});
+
+		return res.status(200).json(updatedPhoto);
+	} catch (err: any) {
+		console.log(err);
+		return res.status(500).json({ error: 'Erro ao atualizar foto.' });
+	}
+};
 
 export const deletePhoto = async (req: Request, res: Response) => {
 	try {
