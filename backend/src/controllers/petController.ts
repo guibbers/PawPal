@@ -2,10 +2,12 @@ import type { Request, Response } from 'express';
 import { latinize } from 'modern-diacritics';
 import prisma from '../lib/prisma';
 import { normalize } from '../utils/normalize';
-import { petSchema } from '../validators/petSchema';
-import { petSearchSchema } from '../validators/petSearchSchema';
-import { petUpdateSchema } from '../validators/petUpdateSchema';
-import { getPetsByUserSchema } from '../validators/petsByUserSchema';
+import {
+	getPetsByUserSchema,
+	petSchema,
+	petSearchSchema,
+	petUpdateSchema,
+} from '../validators/petSchemas';
 
 export const createPet = async (req: Request, res: Response) => {
 	try {

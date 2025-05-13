@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { photoSchema } from '../validators/photoSchema';
-import { photoUpdateSchema } from '../validators/photoUpdateSchema';
+import { photoSchema, photoUpdateSchema } from '../validators/photoSchemas';
 
 export const createPhoto = async (req: Request, res: Response) => {
 	try {

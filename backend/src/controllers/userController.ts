@@ -4,9 +4,11 @@ import type { Request, Response } from 'express';
 import { latinize } from 'modern-diacritics';
 import prisma from '../lib/prisma';
 import { normalize } from '../utils/normalize';
-import { userSchema } from '../validators/userSchema';
-import { userSearchSchema } from '../validators/userSearchSchema';
-import { userUpdateSchema } from '../validators/userUpdateSchema';
+import {
+	userSchema,
+	userSearchSchema,
+	userUpdateSchema,
+} from '../validators/userSchemas';
 
 export const createUser = async (req: Request, res: Response) => {
 	try {
