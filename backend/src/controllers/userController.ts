@@ -1,4 +1,3 @@
-import type { Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import type { Request, Response } from 'express';
 import { latinize } from 'modern-diacritics';
@@ -50,10 +49,28 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getUsers = async (req: Request, res: Response) => {
 	try {
-		const { role } = req.query;
+		const parsed = userSearchSchema.safeParse(req.query);
+
+		if (!parsed.success) {
+			return res.status(400).json({ error: parsed.error.format() });
+		}
+
+		const { id, name, email, role } = parsed.data;
+
+		const filters: any = {};
+
+		if (id) filters.id = id;
+		if (email) filters.email = email;
+		if (name) {
+			filters.normalizedName = {
+				contains: normalize(name),
+				mode: 'insensitive',
+			};
+		}
+		if (role) filters.role = role;
 
 		const users = await prisma.user.findMany({
-			where: role ? { role: role as Role } : {},
+			where: filters,
 			select: {
 				id: true,
 				name: true,
@@ -65,47 +82,7 @@ export const getUsers = async (req: Request, res: Response) => {
 		});
 
 		return res.status(200).json(users);
-	} catch (err) {
-		console.error(err);
-		return res.status(500).json({ error: 'Erro ao buscar usuários' });
-	}
-};
-
-export const searchUsers = async (req: Request, res: Response) => {
-	try {
-		const parsed = userSearchSchema.safeParse(req.query);
-
-		if (!parsed.success) {
-			return res.status(400).json({ error: parsed.error.format() });
-		}
-		const { id, name, email, role, normalizedName } = parsed.data;
-
-		if (!id && !email && !name && !role && !normalizedName) {
-			return res
-				.status(400)
-				.json({ error: 'Informe ao menos um critério de busca.' });
-		}
-
-		const filters: any = {};
-
-		if (id) filters.id = id;
-		if (email) filters.email = email;
-		if (name)
-			filters.normalizedName = {
-				contains: normalize(name),
-				mode: 'insensitive',
-			};
-		if (role) filters.role = role.toUpperCase();
-
-		const users = await prisma.user.findMany({
-			where: filters,
-			include: {
-				pets: true,
-			},
-		});
-
-		return res.status(200).json(users);
-	} catch (err) {
+	} catch (err: any) {
 		console.error(err);
 		return res.status(500).json({ error: 'Erro ao buscar usuários' });
 	}
