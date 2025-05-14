@@ -1,14 +1,16 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
+	const hashedPassword = await bcrypt.hash('senha123', 10);
 	const user1 = await prisma.user.create({
 		data: {
 			name: 'Juli Dominguez',
 			normalizedName: 'juli dominguez',
 			email: 'juli@pawpal.com',
-			password: 'senha123',
+			password: hashedPassword,
 			phone: '11999999999',
 			role: 'TUTOR',
 			profilePicture:
@@ -21,7 +23,7 @@ async function main() {
 			name: 'Laura Aguiar',
 			normalizedName: 'laura aguiar',
 			email: 'laura@pawpal.com',
-			password: 'senha123',
+			password: hashedPassword,
 			phone: '11988888888',
 			role: 'TUTOR',
 			profilePicture:
@@ -34,7 +36,7 @@ async function main() {
 			name: 'Guilherme Torres',
 			normalizedName: 'guilherme torres',
 			email: 'guilherme@pawpal.com',
-			password: 'senha123',
+			password: hashedPassword,
 			phone: '11988888888',
 			role: 'MANAGER',
 			profilePicture:
@@ -47,7 +49,7 @@ async function main() {
 			name: 'Teresa Maria',
 			normalizedName: 'teresa maria',
 			email: 'teresa@pawpal.com',
-			password: 'senha123',
+			password: hashedPassword,
 			phone: '11988888888',
 			role: 'RECEPCIONIST',
 			profilePicture: 'https://example.com/perfil-maria.jpg',
@@ -59,7 +61,7 @@ async function main() {
 			name: 'Lídia Sampaio',
 			normalizedName: 'lidia sampaio',
 			email: 'lidia@pawpal.com',
-			password: 'senha123',
+			password: hashedPassword,
 			phone: '11988888888',
 			role: 'MONITOR',
 			profilePicture: 'https://example.com/perfil-maria.jpg',

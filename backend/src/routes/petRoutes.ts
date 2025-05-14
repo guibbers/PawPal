@@ -6,12 +6,28 @@ import {
 	getPetsByUser,
 	updatePet,
 } from '../controllers/petController';
+import { authenticate, authorize } from '../middlewares/authMiddleware';
 
 const router = Router();
-router.post('/pets', createPet);
-router.get('/pets', getPets);
-router.put('/pets/:id', updatePet);
-router.delete('/pets/:id', deletePet);
+router.post(
+	'/pets',
+	authenticate,
+	authorize(['MANAGER', 'RECEPCIONIST']),
+	createPet,
+);
+router.get(
+	'/pets',
+	authenticate,
+	authorize(['MANAGER', 'MONITOR', 'RECEPCIONIST']),
+	getPets,
+);
+router.put(
+	'/pets/:id',
+	authenticate,
+	authorize(['MANAGER', 'RECEPCIONIST']),
+	updatePet,
+);
+router.delete('/pets/:id', authenticate, authorize(['MANAGER']), deletePet);
 router.get('/users/:id/pets', getPetsByUser);
 
 export default router;

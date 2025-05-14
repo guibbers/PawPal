@@ -1,10 +1,11 @@
 import type { Role } from '@prisma/client';
 import type { NextFunction, Request, Response } from 'express';
+
 import jwt from 'jsonwebtoken';
 
 const secret = process.env.JWT_SECRET as string;
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
 	user?: {
 		id: string;
 		role: Role;

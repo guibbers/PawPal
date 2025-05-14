@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import type { AuthenticatedRequest } from '../middlewares/authMiddleware';
 import { photoSchema, photoUpdateSchema } from '../validators/photoSchemas';
 
 export const createPhoto = async (req: Request, res: Response) => {
@@ -174,5 +175,42 @@ export const deletePhoto = async (req: Request, res: Response) => {
 	} catch (err: any) {
 		console.error(err);
 		return res.status(500).json({ error: 'Erro ao excluir foto.' });
+	}
+};
+
+export const getMyPetsPhotos = async (
+	req: AuthenticatedRequest,
+	res: Response,
+) => {
+	try {
+		const userId = req.user?.id;
+		const pets = await prisma.pet.findMany({
+			where: {
+				tutor: { id: userId },
+			},
+			select: { id: true },
+		});
+
+		const petIds = pets.map((pet) => pet.id);
+
+		const photos = await prisma.photo.findMany({
+			where: {
+				pets: {
+					some: {
+						petId: { in: petIds },
+					},
+				},
+			},
+			include: {
+				pets: true,
+			},
+		});
+
+		res.status(200).json(photos);
+	} catch (err: any) {
+		console.error(err);
+		return res
+			.status(500)
+			.json({ error: 'Erro ao buscar fotos de seu(s) pet(s).' });
 	}
 };
